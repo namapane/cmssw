@@ -7,20 +7,11 @@ import FWCore.ParameterSet.Config as cms
 # RPC Geometry
 #------------------------------------ DT ------------------------------------------------
 # 1D RecHits
-# from RecoLocalMuon.DTRecHit.dt1DRecHits_ParamDrift_cfi import *
-#	include "RecoLocalMuon/DTRecHit/data/dt1DRecHits_LinearDrift.cfi"
-#	include "RecoLocalMuon/DTRecHit/data/dt1DRecHits_LinearDriftFromDB.cfi"
 from RecoLocalMuon.DTRecHit.dt1DRecHits_LinearDriftFromDB_cfi import *
 # 2D Segments
-# from RecoLocalMuon.DTSegment.dt2DSegments_CombPatternReco2D_ParamDrift_cfi import *
-#	include "RecoLocalMuon/DTSegment/data/dt2DSegments_CombPatternReco2D_LinearDrift.cfi"
-#	include "RecoLocalMuon/DTSegment/data/dt2DSegments_CombPatternReco2D_LinearDriftFromDB.cfi"
-from RecoLocalMuon.DTSegment.dt2DSegments_CombPatternReco2D_LinearDriftFromDB_cfi import *
+from RecoLocalMuon.DTSegment.dt2DSegments_MTPatternReco2D_LinearDriftFromDB_cfi import *
 # 4D Segments
-# from RecoLocalMuon.DTSegment.dt4DSegments_CombPatternReco4D_ParamDrift_cfi import *
-#	include "RecoLocalMuon/DTSegment/data/dt4DSegments_CombPatternReco4D_LinearDrift.cfi"
-#	include "RecoLocalMuon/DTSegment/data/dt4DSegments_CombPatternReco4D_LinearDriftFromDB.cfi"
-from RecoLocalMuon.DTSegment.dt4DSegments_CombPatternReco4D_LinearDriftFromDB_cfi import *
+from RecoLocalMuon.DTSegment.dt4DSegments_MTPatternReco4D_LinearDriftFromDB_cfi import *
 # 4D segments with t0 correction
 from RecoLocalMuon.DTSegment.dt4DSegments_ApplyT0Correction_cfi import *
 #------------------------------------ CSC -----------------------------------------------
@@ -28,6 +19,8 @@ from RecoLocalMuon.DTSegment.dt4DSegments_ApplyT0Correction_cfi import *
 from RecoLocalMuon.CSCRecHitD.cscRecHitD_cfi import *
 # Segments
 from RecoLocalMuon.CSCSegment.cscSegments_cfi import *
+from CalibMuon.CSCCalibration.CSCChannelMapper_cfi import *
+from CalibMuon.CSCCalibration.CSCIndexer_cfi import *
 #------------------------------------ RPC -----------------------------------------------
 # 1D RecHits
 from RecoLocalMuon.RPCRecHit.rpcRecHits_cfi import *

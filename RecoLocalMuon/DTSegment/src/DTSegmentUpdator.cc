@@ -1,7 +1,5 @@
 /** \file
  *
- * $Date: 2012/02/20 22:17:46 $
- * $Revision: 1.47 $
  * \author Stefano Lacaprara - INFN Legnaro <stefano.lacaprara@pd.infn.it>
  * \author Riccardo Bellan - INFN TO <riccardo.bellan@cern.ch>
  * \       A.Meneguzzo - Padova University  <anna.meneguzzo@pd.infn.it>
@@ -85,6 +83,8 @@ void DTSegmentUpdator::update(DTRecSegment4D* seg, const bool calcT0) const {
 
   int step = (hasPhi && hasZed) ? 3 : 2;
   if(calcT0) step = 4;
+
+  if(debug) cout << "Step of update is " << step << endl;
 
   GlobalPoint  pos = theGeom->idToDet(seg->geographicalId())->toGlobal(seg->localPosition());
   GlobalVector dir = theGeom->idToDet(seg->geographicalId())->toGlobal(seg->localDirection());
@@ -380,6 +380,10 @@ void DTSegmentUpdator::updateHits(DTRecSegment2D* seg, GlobalPoint &gpos,
 
       LocalPoint point(hit->localPosition().x() + dy_corr, +segPosAtLayer.y(), 0.);
 
+      //double final_hit_resol = T0_hit_resolution;
+      //if(newHit1D.wireId().layerId().superlayerId().superLayer() != 2) final_hit_resol = final_hit_resol * 0.8;
+      //LocalError error(final_hit_resol * final_hit_resol,0.,0.);
+
       LocalError error(T0_hit_resolution*T0_hit_resolution,0.,0.);
 
       newHit1D.setPositionAndError(point, error);
@@ -433,9 +437,12 @@ void DTSegmentUpdator::rejectBadHits(DTChamberRecSegment2D* phiSeg) const {
   float Sy2 = 0.;
   float Sxy = 0.;
 
-  const int N =  x.size();
+  size_t N =  x.size();
+
+  if (N == 0)
+    return;
 	
-  for(int i = 0; i < N;++i){
+  for(size_t i = 0; i < N;++i){
     Sx += x.at(i);
     Sy += y.at(i);
     Sx2 += x.at(i)*x.at(i);
@@ -453,11 +460,16 @@ void DTSegmentUpdator::rejectBadHits(DTChamberRecSegment2D* phiSeg) const {
   // Calc residuals:
   float residuals[N];
 	
-  for(int i = 0; i < N;++i)
+  for(size_t i = 0; i < N;++i)
     residuals[i] = 0;
 	
-  for(int i = 0; i < N;++i)		
+  for(size_t i = 0; i < N;++i){
     residuals[i] = y.at(i) - par[1]*x.at(i) - par[0];
+    if(debug){ 
+      cout<<" i: "<<i<<" y_i "<<y.at(i)<<" x_i "<<x.at(i)<<" res_i "<<residuals[i]; 
+      if (i==N-1) cout<<endl;
+    }
+  }
 	
   if(debug) cout << " Residuals computed! "<<  endl;
 		
@@ -467,7 +479,7 @@ void DTSegmentUpdator::rejectBadHits(DTChamberRecSegment2D* phiSeg) const {
 	
   float mean_residual = 0.; //mean of the absolute values of residuals
 	
-  for (int i = 0; i < N; ++i)
+  for (size_t i = 0; i < N; ++i)
     mean_residual += fabs(residuals[i]);
 	
   mean_residual = mean_residual/(N - 2);	
@@ -481,14 +493,15 @@ void DTSegmentUpdator::rejectBadHits(DTChamberRecSegment2D* phiSeg) const {
 		
     DTRecHit1D newHit1D = (*hit);
 
-    if(fabs(residuals[i])/mean_residual < 1.5){
+    float normResidual = mean_residual > 0 ? fabs(residuals[i])/mean_residual : 0;
+    if(normResidual < 1.5){
 					
       updatedRecHits.push_back(newHit1D);
-      if(debug) cout << " accepted "<< i+1 << "th hit" <<"  Irej: " << fabs(residuals[i])/mean_residual << endl;
+      if(debug) cout << " accepted "<< i+1 << "th hit" <<"  Irej: " << normResidual << endl;
       ++i;
     }
     else {
-      if(debug) cout << " rejected "<< i+1 << "th hit" <<"  Irej: " << fabs(residuals[i])/mean_residual << endl;
+      if(debug) cout << " rejected "<< i+1 << "th hit" <<"  Irej: " << normResidual << endl;
       ++i;
       continue;
     }

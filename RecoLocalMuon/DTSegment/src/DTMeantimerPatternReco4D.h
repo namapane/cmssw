@@ -5,8 +5,6 @@
  *
  * Algo for reconstructing 4d segment in DT using a Meantimer approach
  *  
- * $Date: 2008/12/03 12:52:22 $
- * $Revision: 1.3 $
  * \author Stefano Lacaprara - INFN Legnaro <stefano.lacaprara@pd.infn.it>
  * \author Riccardo Bellan - INFN TO <riccardo.bellan@cern.ch>
  *
@@ -85,6 +83,8 @@ class DTMeantimerPatternReco4D : public DTRecSegment4DBaseAlgo {
 
     //the input type
     bool allDTRecHits;
+    bool applyT0corr;
+    bool computeT0corr;
 
     //  std::vector<DTRecHit1D> the1DPhiHits;
     std::vector<DTSLRecSegment2D> theSegments2DTheta; 

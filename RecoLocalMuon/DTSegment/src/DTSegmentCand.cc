@@ -1,7 +1,5 @@
 /** \file
  *
- * $Date: 2011/01/13 08:14:42 $
- * $Revision: 1.17 $
  * \author Stefano Lacaprara - INFN Legnaro <stefano.lacaprara@pd.infn.it>
  * \author Riccardo Bellan - INFN TO <riccardo.bellan@cern.ch>
  */
@@ -27,11 +25,11 @@ DTSegmentCand::DTSegmentCand(AssPointCont& hits,
 theSL(sl), theChi2(-1.) , theHits(hits){
 }
 
-DTSegmentCand::DTSegmentCand(AssPointCont hits,
+DTSegmentCand::DTSegmentCand(const AssPointCont& hits,
                              LocalPoint& position,
                              LocalVector& direction,
                              double chi2,
-                             AlgebraicSymMatrix covMat,
+                             const AlgebraicSymMatrix& covMat,
                              const DTSuperLayer* sl) :
 theSL(sl), thePosition(position), theDirection(direction), theChi2(chi2),
   theCovMatrix( covMat), theHits(hits) {

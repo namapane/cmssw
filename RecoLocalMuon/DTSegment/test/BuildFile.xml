@@ -10,9 +10,6 @@
 <use   name="CalibMuon/DTDigiSync"/>
 <use   name="RecoMuon/TrackingTools"/>
 <use   name="TrackingTools/TransientTrack"/>
-<library   file="DTFilter.cc" name="DTFilter">
-  <flags   EDM_PLUGIN="1"/>
-</library>
 <library   file="DTSegmentResidual.cc,DTMeanTimer.cc,DTAnalyzerDetailed.cc" name="DTAnalyzerDetailed">
   <flags   EDM_PLUGIN="1"/>
 </library>

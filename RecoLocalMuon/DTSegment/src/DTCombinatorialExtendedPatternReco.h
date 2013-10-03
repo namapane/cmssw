@@ -5,8 +5,6 @@
  *
  * Algo for reconstructing 2d segment in DT using a combinatorial approach
  *  
- * $Date: 2008/12/03 12:52:22 $
- * $Revision: 1.1 $
  * \author Stefano Lacaprara - INFN Legnaro <stefano.lacaprara@pd.infn.it>
  * \author Riccardo Bellan - INFN TO <riccardo.bellan@cern.ch>
  *
@@ -65,7 +63,7 @@ class DTCombinatorialExtendedPatternReco : private DTRecSegment2DBaseAlgo {
     virtual void setES(const edm::EventSetup& setup);
 
     // pass clusters to algo
-    void setClusters(std::vector<DTSLRecCluster> clusters);
+    void setClusters(const std::vector<DTSLRecCluster>& clusters);
 
   protected:
 
