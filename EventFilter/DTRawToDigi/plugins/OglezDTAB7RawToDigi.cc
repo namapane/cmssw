@@ -395,11 +395,6 @@ void OglezDTAB7RawToDigi::readAB7PayLoad_hitWord (long dataWord,int fedno, int s
 //    DTROChainCoding channelIndex(dduId, rosId, robId, tdcId, tdcChannel);
 //    uint32_t chCode=channelIndex.getCode();
 
-    // Using the one for the Phase-2 SX5 proptype
-    uint32_t chCode = channelId;  //
-
-    if (hitOrder_.find(chCode) == hitOrder_.end()) hitOrder_[chCode] = 0;
-    else hitOrder_[chCode]++;
 
 //Estupidez, ver abajo formula de relacion    int layerId[4] = {4,2,3,1};
 
@@ -430,6 +425,8 @@ void OglezDTAB7RawToDigi::readAB7PayLoad_hitWord (long dataWord,int fedno, int s
 
     // Clean way:
     DTWireId detId = DTWireId(wheelId, stationId, sectorId, slId, layerId, wire);
+    hitOrder_[detId.rawId()]++;
+
 //Useless... stored as value!    int wire = detId.wire();
 
 //    std::cout<<"        Estamos en el canal "<<channelId<<" que se corresponde con "<<slId<<" "<<layerId<<" "
@@ -449,10 +446,14 @@ void OglezDTAB7RawToDigi::readAB7PayLoad_hitWord (long dataWord,int fedno, int s
     // There is a *(32/25) to convert from ns to TDCCounts  (and it needs to be positive!)
     // We need to subtract 1 in the tdc_hit, because it goes from 1-30, due to some
     //            convention (Alvaro indicated so)
-    int tdccounts = int(32*(bx+(tdc_hit_t-1)/30.)+0.5)-32*bxCounter_;
-    while (tdccounts<0) tdccounts+=114048;// 32*3564;
+    //int tdccounts = int(32*(bx+(tdc_hit_t-1)/30.)+0.5)-32*bxCounter_;
+    //while (tdccounts<0) tdccounts+=114048;// 32*3564;
+    
+    // Correct computation of tdc counts in their natural units, for storage in the updated DTDigi format
+    int tdccounts = (bx-bxCounter_)*30 + tdc_hit_t-1;
+    DTDigi digi(wire,tdccounts, hitOrder_[detId.rawId()]-1, 30);
 
-    DTDigi digi(wire,tdccounts, hitOrder_[chCode]);
+
     //OLD DTDigi digi(wire,int(32*(bx+tdc_hit_t/30.)+0.5)-32*bxCounter_, hitOrder_[chCode]);
 
     //std::cout<<"            OGINFO: Inserting DIGI! "<<detId.layerId()<<" "<<wire<<" "<<channelIndex.getCode()<<" "<<hitOrder_[channelIndex.getCode()]<<std::endl;
