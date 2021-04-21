@@ -31,7 +31,6 @@
 #include "Geometry/DTGeometry/interface/DTGeometry.h"
 #include "Geometry/CommonDetUnit/interface/GlobalTrackingGeometry.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
-#include "CondFormats/DTObjects/interface/DTMtime.h"
 
 #include "RecoMuon/MeasurementDet/interface/MuonDetLayerMeasurements.h"
 #include "DQMServices/Core/interface/DQMStore.h"
@@ -40,6 +39,8 @@
 
 class DetLayer;
 class DetId;
+class DTMtime;
+class DTRecoConditions;
 
 class DTRunConditionVar : public DQMEDAnalyzer {
 public:
@@ -67,8 +68,9 @@ private:
 
   edm::ESHandle<DTGeometry> dtGeom;
 
-  edm::ESHandle<DTMtime> mTime;
-  const DTMtime* mTimeMap_;
+  const DTMtime* mTimeMap_;            // legacy DB object
+  const DTRecoConditions* vDriftMap_;  // DB object in new format
+  bool readLegacyVDriftDB;             // which one to use
 
   std::map<uint32_t, std::map<std::string, MonitorElement*> > chamberHistos;
 

@@ -25,8 +25,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include <FWCore/Framework/interface/LuminosityBlock.h>
 
-#include "CondFormats/DTObjects/interface/DTMtime.h"
-
 #include "DQMServices/Core/interface/DQMStore.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
@@ -42,6 +40,8 @@
 class DTGeometry;
 class DTChamberId;
 class DTLayerId;
+class DTMtime;
+class DTRecoConditions;
 
 class DTRunConditionVarClient : public DQMEDHarvester {
 public:
@@ -97,8 +97,9 @@ private:
   float maxGoodT0Sigma;
   float minBadT0Sigma;
 
-  edm::ESHandle<DTMtime> mTime;
-  const DTMtime* mTimeMap_;
+  const DTMtime* mTimeMap_;            // legacy DB object
+  const DTRecoConditions* vDriftMap_;  // DB object in new format
+  bool readLegacyVDriftDB;             // which one to use
 
   bool bookingdone;
 
