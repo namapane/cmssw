@@ -9,5 +9,6 @@ dtTTrigResidualCorrection = cms.EDAnalyzer("DTTTrigCorrection",
         rootBaseDir = cms.untracked.string('DTResiduals'),
         dbLabel = cms.untracked.string(''),
         useFitToResiduals = cms.bool(True)
-    )
+    ),
+    readLegacyVDriftDB =cms.bool(True),
 )
