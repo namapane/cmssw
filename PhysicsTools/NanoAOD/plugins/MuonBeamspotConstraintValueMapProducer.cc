@@ -13,12 +13,14 @@
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "RecoVertex/KalmanVertexFit/interface/SingleTrackVertexConstraint.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 
 class MuonBeamspotConstraintValueMapProducer : public edm::global::EDProducer<> {
 public:
   explicit MuonBeamspotConstraintValueMapProducer(const edm::ParameterSet& config)
       : muonToken_(consumes<pat::MuonCollection>(config.getParameter<edm::InputTag>("src"))),
         beamSpotToken_(consumes<reco::BeamSpot>(config.getParameter<edm::InputTag>("beamspot"))),
+        PrimaryVertexToken_(consumes<reco::VertexCollection>(config.getParameter<edm::InputTag>("vertices"))),
         ttbToken_(esConsumes(edm::ESInputTag("", "TransientTrackBuilder"))) {
     produces<edm::ValueMap<float>>("muonBSConstrainedPt");
     produces<edm::ValueMap<float>>("muonBSConstrainedPtErr");
@@ -30,6 +32,8 @@ public:
     edm::ParameterSetDescription desc;
     desc.add<edm::InputTag>("src", edm::InputTag("muons"))->setComment("Muon collection");
     desc.add<edm::InputTag>("beamspot", edm::InputTag("offlineBeamSpot"))->setComment("Beam spot collection");
+    desc.add<edm::InputTag>("vertices", edm::InputTag("offlineSlimmedPrimaryVertices"))
+        ->setComment("Primary vertex collection");
 
     descriptions.addWithDefaultLabel(desc);
   }
@@ -51,20 +55,50 @@ private:
     for (const auto& muon : *muons) {
       bool tbd = true;
       if (beamSpotHandle.isValid()) {
-        SingleTrackVertexConstraint::BTFtuple btft = stvc.constrain(ttkb->build(muon.muonBestTrack()), *beamSpotHandle);
-        if (std::get<0>(btft)) {
-          // chi2 = std::get<2>(btft)); // should apply a cut, or store this as well?
-          const reco::Track& trkBS = std::get<1>(btft).track();
-          pts.push_back(trkBS.pt());
-          ptErrs.push_back(trkBS.ptError());
-          tbd = false;
+        double BeamWidthX = beamSpotHandle->BeamWidthX();
+        double BeamWidthXError = beamSpotHandle->BeamWidthXError();
+        double BeamWidthY = beamSpotHandle->BeamWidthY();
+        double BeamWidthYError = beamSpotHandle->BeamWidthYError();
+        // Protect for mis-reconstructed beamspots (note that
+        // SingleTrackVertexConstraint uses the width for the constraint,
+        // not the error)
+        if ((BeamWidthXError / BeamWidthX < 0.3) && (BeamWidthYError / BeamWidthY < 0.3)) {
+          SingleTrackVertexConstraint::BTFtuple btft =
+              stvc.constrain(ttkb->build(muon.muonBestTrack()), *beamSpotHandle);
+          if (std::get<0>(btft)) {
+            // chi2 = std::get<2>(btft)); // should apply a cut, or store this as well?
+            const reco::Track& trkBS = std::get<1>(btft).track();
+            pts.push_back(trkBS.pt());
+            ptErrs.push_back(trkBS.ptError());
+            tbd = false;
+          }
         }
       }
-      if (tbd) {  //FIXME fallback case if constrain fails; to be implemented
-                  // 	pts.push_back(muon.pt());
-                  // 	ptErrs.push_back(muon.bestTrack()->ptError());
-        pts.push_back(-1.);
-        ptErrs.push_back(-1.);
+
+      if (tbd) {
+        // Invalid BS; use PV instead
+        edm::Handle<reco::VertexCollection> pvHandle;
+        event.getByToken(PrimaryVertexToken_, pvHandle);
+
+        if (pvHandle.isValid() && !pvHandle->empty()) {
+          auto pv = pvHandle->at(0);
+          VertexState pvs = VertexState(GlobalPoint(Basic3DVector<float>(pv.position())), GlobalError(pv.covariance()));
+
+          SingleTrackVertexConstraint::BTFtuple btft = stvc.constrain(ttkb->build(muon.muonBestTrack()), pvs);
+          if (std::get<0>(btft)) {
+            // chi2 = std::get<2>(btft)); // should apply a cut, or store this as well?
+            const reco::Track& trkBS = std::get<1>(btft).track();
+            pts.push_back(trkBS.pt());
+            ptErrs.push_back(trkBS.ptError());
+            tbd = false;
+          }
+        }
+      }
+
+      if (tbd) {
+        // Fall-back case, keep the unconstrained values
+        pts.push_back(muon.pt());
+        ptErrs.push_back(muon.bestTrack()->ptError());
       }
     }
 
@@ -87,6 +121,7 @@ private:
 
   edm::EDGetTokenT<pat::MuonCollection> muonToken_;
   edm::EDGetTokenT<reco::BeamSpot> beamSpotToken_;
+  edm::EDGetTokenT<reco::VertexCollection> PrimaryVertexToken_;
   edm::ESGetToken<TransientTrackBuilder, TransientTrackRecord> ttbToken_;
   SingleTrackVertexConstraint stvc;
 };
