@@ -28,6 +28,8 @@ public:
   /// Destructor
   ~DTLinearDriftFromDBAlgo() override;
 
+  static void fillPSetDescription(edm::ParameterSetDescription& iDesc);
+  
   // Operations
 
   /// Pass the Event Setup to the algo at each event
@@ -123,3 +125,4 @@ private:
   const bool debug;
 };
 #endif  // RecoLocalMuon_DTLinearDriftFromDBAlgo_H
+

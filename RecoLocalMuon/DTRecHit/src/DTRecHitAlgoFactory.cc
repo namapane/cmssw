@@ -6,6 +6,6 @@
 
 #include "RecoLocalMuon/DTRecHit/interface/DTRecHitAlgoFactory.h"
 
-#include "FWCore/PluginManager/interface/PluginFactory.h"
+#include "FWCore/ParameterSet/interface/ValidatedPluginFactoryMacros.h"
 
-EDM_REGISTER_PLUGINFACTORY(DTRecHitAlgoFactory, "DTRecHitAlgoFactory");
+EDM_REGISTER_VALIDATED_PLUGINFACTORY(DTRecHitAlgoFactory, "DTRecHitAlgoFactory");

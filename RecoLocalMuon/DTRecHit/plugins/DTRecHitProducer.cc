@@ -9,6 +9,9 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+#include "FWCore/ParameterSet/interface/PluginDescription.h"
 
 #include "DataFormats/DTDigi/interface/DTDigiCollection.h"
 
@@ -29,22 +32,36 @@ using namespace std;
 DTRecHitProducer::DTRecHitProducer(const ParameterSet& config)
     :  // Set verbose output
       debug(config.getUntrackedParameter<bool>("debug", false)),
-      dtGeomToken_(esConsumes()),
-      // Get the concrete reconstruction algo from the factory
-      theAlgo{DTRecHitAlgoFactory::get()->create(config.getParameter<string>("recAlgo"),
-                                                 config.getParameter<ParameterSet>("recAlgoConfig"),
-                                                 consumesCollector())} {
+      dtGeomToken_(esConsumes()) {
   if (debug)
     cout << "[DTRecHitProducer] Constructor called" << endl;
 
   produces<DTRecHitCollection>();
 
   DTDigiToken_ = consumes<DTDigiCollection>(config.getParameter<InputTag>("dtDigiLabel"));
+
+  auto pluginPSet = config.getParameter<edm::ParameterSet>("recAlgoConfig");
+  theAlgo = DTRecHitAlgoFactory::get()->create(pluginPSet.getParameter<std::string>("recAlgo"),
+					       pluginPSet,
+					       consumesCollector());
 }
 
 DTRecHitProducer::~DTRecHitProducer() {
   if (debug)
     cout << "[DTRecHitProducer] Destructor called" << endl;
+}
+
+void DTRecHitProducer::fillDescriptions(edm::ConfigurationDescriptions & descriptions) {
+  edm::ParameterSetDescription desc;
+  //  desc.add<string>("recAlgo", "DTLinearDriftFromDBAlgo"); // Now automatically added to the plugin's pset
+  desc.add<InputTag>("dtDigiLabel", InputTag("muonDTDigis"));
+  desc.addUntracked<bool>("debug", false);
+
+  edm::ParameterSetDescription recAlgoDesc;
+  recAlgoDesc.addNode(edm::PluginDescription<DTRecHitAlgoFactory>("recAlgo", "DTLinearDriftFromDBAlgo", true)); // PSet for recAlgoConfig
+  desc.add<edm::ParameterSetDescription>("recAlgoConfig", recAlgoDesc);
+      
+  descriptions.addWithDefaultLabel(desc);
 }
 
 void DTRecHitProducer::produce(Event& event, const EventSetup& setup) {

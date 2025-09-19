@@ -23,6 +23,7 @@ class DTTTrigBaseSync;
 
 namespace edm {
   class ParameterSet;
+  class ParameterSetDescription;
   class EventSetup;
   class ConsumesCollector;
 }  // namespace edm

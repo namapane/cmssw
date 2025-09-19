@@ -17,6 +17,7 @@ namespace edm {
   class ParameterSet;
   class Event;
   class EventSetup;
+  class ConfigurationDescriptions;
 }  // namespace edm
 
 class DTRecHitBaseAlgo;
@@ -31,6 +32,8 @@ public:
   /// Destructor
   ~DTRecHitProducer() override;
 
+  static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
+  
   /// The method which produces the rechits
   void produce(edm::Event& event, const edm::EventSetup& setup) override;
 

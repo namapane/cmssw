@@ -9,6 +9,7 @@
 #include "DataFormats/MuonDetId/interface/DTWireId.h"
 #include "Geometry/DTGeometry/interface/DTLayer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
@@ -53,6 +54,18 @@ DTLinearDriftFromDBAlgo::DTLinearDriftFromDBAlgo(const ParameterSet& config, Con
 }
 
 DTLinearDriftFromDBAlgo::~DTLinearDriftFromDBAlgo() {}
+
+void DTLinearDriftFromDBAlgo::fillPSetDescription(edm::ParameterSetDescription& iDesc) {
+  iDesc.addUntracked<bool>("debug", false);
+  iDesc.add<double>("minTime", -3.0);
+  iDesc.add<double>("maxTime", 420.0);    
+  iDesc.add<bool>("doVdriftCorr", true);
+  iDesc.add<bool>("stepTwoFromDigi", false);
+  iDesc.add<bool>("useUncertDB", true);
+  iDesc.add<bool>("readLegacyTTrigDB", true);
+  iDesc.add<bool>("readLegacyVDriftDB", true);
+  //  iDesc.add<string>("tTrigMode", "DTTTrigSyncFromDB"); // would have to be moved to pset tTrigModeConfig 
+}
 
 void DTLinearDriftFromDBAlgo::setES(const EventSetup& setup) {
   if (debug)
@@ -271,3 +284,7 @@ bool DTLinearDriftFromDBAlgo::compute(const DTLayer* layer,
     return false;
   }
 }
+
+#include "FWCore/ParameterSet/interface/ValidatedPluginMacros.h"
+#include "RecoLocalMuon/DTRecHit/interface/DTRecHitAlgoFactory.h"
+DEFINE_EDM_VALIDATED_PLUGIN(DTRecHitAlgoFactory,DTLinearDriftFromDBAlgo, "DTLinearDriftFromDBAlgo");
