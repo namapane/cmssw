@@ -38,6 +38,7 @@
 #include "CalibMuon/DTDigiSync/interface/DTTTrigBaseSync.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "Geometry/DTGeometry/interface/DTLayer.h"
@@ -62,6 +63,8 @@ public:
   /// Destructor
   ~DTTTrigSyncFromDB() override;
 
+  static void fillPSetDescription(edm::ParameterSetDescription& iDesc);
+  
   // Operations
 
   /// Pass the Event Setup to the algo at each event
@@ -134,6 +137,18 @@ DTTTrigSyncFromDB::DTTTrigSyncFromDB(const ParameterSet& config, edm::ConsumesCo
 }
 
 DTTTrigSyncFromDB::~DTTTrigSyncFromDB() {}
+
+void DTTTrigSyncFromDB::fillPSetDescription(edm::ParameterSetDescription& iDesc) {
+  iDesc.addUntracked<bool>("debug", false);
+  iDesc.add<double>("vPropWire", 24.4);
+  iDesc.add<bool>("doTOFCorrection", true); // Switch on/off the TOF correction for particles
+  iDesc.add<int>("tofCorrType", 0);
+  iDesc.add<int>("wirePropCorrType", 0);
+  iDesc.add<bool>("doWirePropCorrection", true); // Switch on/off the correction for the signal propagation along the wire
+  iDesc.add<bool>("doT0Correction", true); // Switch on/off the TOF correction from pulses
+  iDesc.add<string>("tTrigLabel", "");
+  iDesc.add<string>("t0Label", "");
+}
 
 void DTTTrigSyncFromDB::setES(const EventSetup& setup) {
   if (doT0Correction) {
@@ -289,7 +304,6 @@ double DTTTrigSyncFromDB::emulatorOffset(const DTWireId& wireId, double& tTrig, 
   return int(tTrig / theBXspace) * theBXspace + t0cell;
 }
 
-#include "FWCore/PluginManager/interface/PluginFactory.h"
+#include "FWCore/ParameterSet/interface/ValidatedPluginMacros.h"
 #include "CalibMuon/DTDigiSync/interface/DTTTrigSyncFactory.h"
-
-DEFINE_EDM_PLUGIN(DTTTrigSyncFactory, DTTTrigSyncFromDB, "DTTTrigSyncFromDB");
+DEFINE_EDM_VALIDATED_PLUGIN(DTTTrigSyncFactory, DTTTrigSyncFromDB, "DTTTrigSyncFromDB");

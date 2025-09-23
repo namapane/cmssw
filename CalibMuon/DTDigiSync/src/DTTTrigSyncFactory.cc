@@ -5,6 +5,7 @@
  *  \author G. Cerminara - INFN Torino
  */
 
+#include "FWCore/ParameterSet/interface/ValidatedPluginFactoryMacros.h"
 #include "CalibMuon/DTDigiSync/interface/DTTTrigSyncFactory.h"
 
-EDM_REGISTER_PLUGINFACTORY(DTTTrigSyncFactory, "DTTTrigSyncFactory");
+EDM_REGISTER_VALIDATED_PLUGINFACTORY(DTTTrigSyncFactory, "DTTTrigSyncFactory");

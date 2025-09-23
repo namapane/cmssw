@@ -15,9 +15,11 @@
 using namespace std;
 using namespace edm;
 
-DTRecHitBaseAlgo::DTRecHitBaseAlgo(const ParameterSet& config, ConsumesCollector cc)
-    : theSync{DTTTrigSyncFactory::get()->create(
-          config.getParameter<string>("tTrigMode"), config.getParameter<ParameterSet>("tTrigModeConfig"), cc)} {}
+DTRecHitBaseAlgo::DTRecHitBaseAlgo(const ParameterSet& config, ConsumesCollector cc) {
+  auto pluginPSet = config.getParameter<ParameterSet>("tTrigModeConfig");
+  theSync = DTTTrigSyncFactory::get()->create(pluginPSet.getParameter<string>("tTrigMode"),
+					      pluginPSet, cc);
+}
 
 DTRecHitBaseAlgo::~DTRecHitBaseAlgo() {}
 

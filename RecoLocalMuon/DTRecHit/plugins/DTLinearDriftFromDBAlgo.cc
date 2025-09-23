@@ -6,10 +6,12 @@
 
 #include "RecoLocalMuon/DTRecHit/plugins/DTLinearDriftFromDBAlgo.h"
 #include "CalibMuon/DTDigiSync/interface/DTTTrigBaseSync.h"
+#include "CalibMuon/DTDigiSync/interface/DTTTrigSyncFactory.h"
 #include "DataFormats/MuonDetId/interface/DTWireId.h"
 #include "Geometry/DTGeometry/interface/DTLayer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+#include "FWCore/ParameterSet/interface/PluginDescription.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
@@ -64,7 +66,10 @@ void DTLinearDriftFromDBAlgo::fillPSetDescription(edm::ParameterSetDescription& 
   iDesc.add<bool>("useUncertDB", true);
   iDesc.add<bool>("readLegacyTTrigDB", true);
   iDesc.add<bool>("readLegacyVDriftDB", true);
-  //  iDesc.add<string>("tTrigMode", "DTTTrigSyncFromDB"); // would have to be moved to pset tTrigModeConfig 
+
+  edm::ParameterSetDescription tTrigDesc;
+  tTrigDesc.addNode(edm::PluginDescription<DTTTrigSyncFactory>("tTrigMode", "DTTTrigSyncFromDB", true)); // PSet for tTrigModeConfig
+  iDesc.add<edm::ParameterSetDescription>("tTrigModeConfig", tTrigDesc);
 }
 
 void DTLinearDriftFromDBAlgo::setES(const EventSetup& setup) {
