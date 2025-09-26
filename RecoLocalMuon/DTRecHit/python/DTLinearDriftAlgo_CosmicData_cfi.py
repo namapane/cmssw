@@ -4,8 +4,6 @@ import FWCore.ParameterSet.Config as cms
 #constant vdrift (and ttrig from DB)
 DTLinearDriftAlgo_CosmicData = cms.PSet(
     recAlgoConfig = cms.PSet(
-        # The module to be used for ttrig synchronization and its set parameter
-        tTrigMode = cms.string('DTTTrigSyncFromDB'),
         #         # Drift velocity for MB1 W1 (unfluxed chamber during MTCC)
         # double driftVelocityMB1W1 = 0.00570
         # Times outside this window (ns) are considered as coming from previous BXs
@@ -28,10 +26,11 @@ DTLinearDriftAlgo_CosmicData = cms.PSet(
             doT0Correction = cms.bool(True),
             debug = cms.untracked.bool(False),
             tTrigLabel = cms.string('cosmics'),
-            t0Label = cms.string('')
+            t0Label = cms.string(''),
+            tTrigMode = cms.string('DTTTrigSyncFromDB'),
         ),
-        maxTime = cms.double(420.0)
+        maxTime = cms.double(420.0),
+        recAlgo = cms.string('DTLinearDriftAlgo'),
     ),
-    recAlgo = cms.string('DTLinearDriftAlgo')
 )
 

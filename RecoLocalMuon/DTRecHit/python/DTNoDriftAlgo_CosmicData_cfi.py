@@ -10,7 +10,6 @@ DTNoDriftAlgo_CosmicData = cms.PSet(
         #
         # DUMMY
         # Dummy ttrig parameters required by DTRecHitBaseAlgo.cc
-        tTrigMode = cms.string('DTTTrigSyncFromDB'),
         # Times outside this window (ns) are considered as coming from previous BXs
         minTime = cms.double(1000.0),
         # Cell resolution (cm)
@@ -28,10 +27,11 @@ DTNoDriftAlgo_CosmicData = cms.PSet(
             doT0Correction = cms.bool(False),
             debug = cms.untracked.bool(False),
             tTrigLabel = cms.string('cosmics'),
-            t0Label = cms.string('')
+            t0Label = cms.string(''),
+            tTrigMode = cms.string('DTTTrigSyncFromDB'),
         ),
-        maxTime = cms.double(3500.0)
+        maxTime = cms.double(3500.0),
+        recAlgo = cms.string('DTNoDriftAlgo'),
     ),
-    recAlgo = cms.string('DTNoDriftAlgo')
 )
 

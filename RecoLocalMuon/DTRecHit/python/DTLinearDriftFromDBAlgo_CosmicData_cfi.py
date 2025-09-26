@@ -20,18 +20,18 @@ DTLinearDriftFromDBAlgo_CosmicData = cms.PSet(
             doT0Correction = cms.bool(True),
             debug = cms.untracked.bool(False),
             tTrigLabel = cms.string('cosmics'),
-            t0Label = cms.string('')
+            t0Label = cms.string(''),
+            tTrigMode = cms.string('DTTTrigSyncFromDB'),
         ),
         maxTime = cms.double(420.0),
         # Forcing Step 2 to go back to digi time 
         stepTwoFromDigi = cms.bool(False),
         # The module to be used for ttrig synchronization and its set parameter
-        tTrigMode = cms.string('DTTTrigSyncFromDB'),
         doVdriftCorr = cms.bool(False),
         useUncertDB = cms.bool(False),
         readLegacyTTrigDB = cms.bool(True),
         readLegacyVDriftDB = cms.bool(True),
+        recAlgo = cms.string('DTLinearDriftFromDBAlgo'),
     ),
-    recAlgo = cms.string('DTLinearDriftFromDBAlgo')
 )
 

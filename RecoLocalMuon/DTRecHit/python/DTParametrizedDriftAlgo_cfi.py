@@ -3,8 +3,6 @@ import FWCore.ParameterSet.Config as cms
 # The reconstruction algo and its parameter set
 DTParametrizedDriftAlgo = cms.PSet(
     recAlgoConfig = cms.PSet(
-        # The module to be used for ttrig synchronization and its parameter set
-        tTrigMode = cms.string('DTTTrigSyncFromDB'),
         minTime = cms.double(-3.0),
         interpolate = cms.bool(True),
         debug = cms.untracked.bool(False),
@@ -21,10 +19,11 @@ DTParametrizedDriftAlgo = cms.PSet(
             doT0Correction = cms.bool(True),
             debug = cms.untracked.bool(False),
             tTrigLabel = cms.string(''),
-            t0Label = cms.string('')
+            t0Label = cms.string(''),
+            tTrigMode = cms.string('DTTTrigSyncFromDB'),
         ),
-        maxTime = cms.double(415.0)
+        maxTime = cms.double(415.0),
+        recAlgo = cms.string('DTParametrizedDriftAlgo'),
     ),
-    recAlgo = cms.string('DTParametrizedDriftAlgo')
 )
 

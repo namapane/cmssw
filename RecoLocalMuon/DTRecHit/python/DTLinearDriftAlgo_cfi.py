@@ -3,7 +3,6 @@ import FWCore.ParameterSet.Config as cms
 DTLinearDriftAlgo = cms.PSet(
     recAlgoConfig = cms.PSet(
         # The module to be used for ttrig synchronization and its parameter set
-        tTrigMode = cms.string('DTTTrigSyncFromDB'),
         # Times outside this window (ns) are considered 
         # as coming from previous BXs
         minTime = cms.double(-3.0),
@@ -25,10 +24,11 @@ DTLinearDriftAlgo = cms.PSet(
             doT0Correction = cms.bool(True),
             debug = cms.untracked.bool(False),
             tTrigLabel = cms.string(''),
-            t0Label = cms.string('')
+            t0Label = cms.string(''),
+            tTrigMode = cms.string('DTTTrigSyncFromDB'),
         ),
-        maxTime = cms.double(415.0)
+        maxTime = cms.double(415.0),
+        recAlgo = cms.string('DTLinearDriftAlgo'),
     ),
-    recAlgo = cms.string('DTLinearDriftAlgo')
 )
 
